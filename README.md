@@ -22,7 +22,9 @@ Data: https://www.openstreetmap.org/#map=5/39.96/-97.82,
 https://developers.google.com/maps
 
 Tools: Python, Flask for backend implementation, React for building map frontend
+
 Visuals:
+
 ![image](https://github.com/user-attachments/assets/a76a1ce9-711c-47b9-8beb-e1cf230ce087)
 
 Strategy: We may want to implement shortest-path algorithms like A* search algorithm
