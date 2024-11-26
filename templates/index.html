@@ -35,14 +35,16 @@
 
     <script>
         // figure out what to do with bounding and max zoom
-        const gVilleBottomLeft = L.latLng(29.610916, -82.403343);
+        const gVilleBottomLeft = L.latLng(29.590916, -82.403343);
         const gVilleTopRight = L.latLng(29.709964, -82.253311);
+        //        const gVilleTopRight = L.latLng(29.84868424409252,-82.01843261718751);
+
         const mapBounds = L.latLngBounds(gVilleBottomLeft, gVilleTopRight);
 
         const map = L.map('map', {maxBounds: mapBounds}).setView([29.651634, -82.324826], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
-            minZoom: 12
+            minZoom: 12.5
         }).addTo(map);
 
         let pointA, pointB;
@@ -54,11 +56,16 @@
             const { lat, lng } = e.latlng;
             if (!pointA) {
                 pointA = [lat, lng];
-                const markerA = L.marker(pointA).addTo(map).bindPopup("Point A").openPopup();
+                console.log("Point A: " + pointA)
+                let popUpA = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point A</h4>"});
+                const markerA = L.marker(pointA).addTo(map).bindPopup(popUpA).openPopup();
                 markers.push(markerA);
             } else if (!pointB) {
                 pointB = [lat, lng];
-                const markerB = L.marker(pointB).addTo(map).bindPopup("Point B").openPopup();
+                console.log("Point B: " + pointB);
+                // TODO: fix const iconB = L.icon({ iconUrl: 'assets/orangeMarker.png', iconSize: [30, 36] });
+                let popUpB = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point B</h4>"});
+                const markerB = L.marker(pointB).addTo(map).bindPopup(popUpB).openPopup();
                 markers.push(markerB);
 
                 fetch('/shortest_path', {
@@ -78,7 +85,9 @@
 
                     if (pathLine) map.removeLayer(pathLine); // Remove previous path if any
                     pathLine = L.polyline(pathCoords, { color: 'blue', weight: 5  }).addTo(map);
-                    map.fitBounds(pathLine.getBounds());
+
+                    const padding = L.point(300, 300);
+                    map.fitBounds(pathLine.getBounds(), {padding});
                 });
             } else {
                 alert("You have already selected Point A and Point B.");

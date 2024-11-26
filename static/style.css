@@ -52,6 +52,13 @@ p {
     font-weight: 500;
 }
 
+h4 {
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+    font-size: 13px;
+}
+
 #close {
     font-size: 25px;
     font-weight: bold;
