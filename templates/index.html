@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortest Path Finder</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map { height: 100vh; }
+        .clear-button {
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            z-index: 1000;
+            background-color: white;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <button class="clear-button" id="clear-button">Clear Selections</button>
+
+    <script>
+        const map = L.map('map').setView([29.651634, -82.324826], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        let pointA, pointB;
+        const markers = [];
+        let pathLine = null;
+
+        map.on('click', function(e) {
+            const { lat, lng } = e.latlng;
+            if (!pointA) {
+                pointA = [lat, lng];
+                const markerA = L.marker(pointA).addTo(map).bindPopup("Point A").openPopup();
+                markers.push(markerA);
+            } else if (!pointB) {
+                pointB = [lat, lng];
+                const markerB = L.marker(pointB).addTo(map).bindPopup("Point B").openPopup();
+                markers.push(markerB);
+
+                fetch('/shortest_path', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pointA, pointB })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const pathCoords = data.path;
+
+                    if (pathLine) map.removeLayer(pathLine); // Remove previous path if any
+                    pathLine = L.polyline(pathCoords, { color: 'blue' }).addTo(map);
+                    map.fitBounds(pathLine.getBounds());
+                });
+            } else {
+                alert("You have already selected Point A and Point B.");
+            }
+        });
+
+        document.getElementById('clear-button').addEventListener('click', () => {
+            markers.forEach(marker => map.removeLayer(marker));
+            markers.length = 0;
+
+            if (pathLine) map.removeLayer(pathLine);
+
+            pointA = null;
+            pointB = null;
+        });
+    </script>
+</body>
+</html>
