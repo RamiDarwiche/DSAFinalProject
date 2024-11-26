@@ -13,6 +13,9 @@
 </head>
 <body>
     <div id="map"></div>
+    <div class="instructions" id="instructions">
+        <h2 id="current-instruction">test</h2>
+    </div>
     <button class="clear-button" id="clear-button">Clear Selections</button>
     <button class="display-times" id="display-times">Display Algorithm Comparisons</button>
     <div class="display-times-container">
@@ -51,12 +54,21 @@
         const markers = [];
         let pathLine = null;
 
+        // set first instruction
+        if(!pointA) {
+            document.getElementById('current-instruction').innerHTML = "Click anywhere to select a starting point";
+            document.getElementById('shortest-path-time').innerHTML = 'No time found';
+        }
+
         // allow for dragging?
+        // clean up code
         map.on('click', function(e) {
             const { lat, lng } = e.latlng;
             if (!pointA) {
                 pointA = [lat, lng];
                 console.log("Point A: " + pointA)
+                // set second instruction after first marker placed
+                document.getElementById('current-instruction').innerHTML = "Click anywhere to select an ending point";
                 let popUpA = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point A</h4>"});
                 const markerA = L.marker(pointA).addTo(map).bindPopup(popUpA).openPopup();
                 markers.push(markerA);
@@ -64,6 +76,7 @@
                 pointB = [lat, lng];
                 console.log("Point B: " + pointB);
                 // TODO: fix const iconB = L.icon({ iconUrl: 'assets/orangeMarker.png', iconSize: [30, 36] });
+                document.getElementById('instructions').style.display = 'none';
                 let popUpB = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point B</h4>"});
                 const markerB = L.marker(pointB).addTo(map).bindPopup(popUpB).openPopup();
                 markers.push(markerB);
@@ -75,16 +88,22 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    const pathCoords = data.path;
-                    const shortestPathTimer = data.time;
+                    const pathCoordsShortest = data.path_shortest;
+                    const shortestPathTimer = data.time_shortest;
+                    const pathCoordsDijkstras = data.path_dijkstras;
+                    const dijkstrasTimer = data.time_dijkstras;
 
                     if(shortestPathTimer) {
                         document.getElementById('shortest-path-time').innerHTML = shortestPathTimer;
                     }
+                    if(dijkstrasTimer) {
+                        document.getElementById('dijkstras-time').innerHTML = dijkstrasTimer;
+                    }
+
                     console.log(shortestPathTimer)
 
                     if (pathLine) map.removeLayer(pathLine); // Remove previous path if any
-                    pathLine = L.polyline(pathCoords, { color: 'blue', weight: 5  }).addTo(map);
+                    pathLine = L.polyline(pathCoordsShortest, { color: 'blue', weight: 5  }).addTo(map);
 
                     const padding = L.point(300, 300);
                     map.fitBounds(pathLine.getBounds(), {padding});
@@ -94,6 +113,7 @@
             }
         });
 
+        // resets markers, instructions, and algorithm comparison panel
         document.getElementById('clear-button').addEventListener('click', () => {
             markers.forEach(marker => map.removeLayer(marker));
             markers.length = 0;
@@ -102,9 +122,12 @@
 
             pointA = null;
             pointB = null;
+            document.getElementById('instructions').style.display = 'block';
+            document.getElementById('current-instruction').innerHTML = "Click anywhere to select a starting point";
+            document.getElementById('shortest-path-time').innerHTML = 'No time found';
         });
 
-        // open and close algorithm comparison div
+        // open and close algorithm comparison panel
         document.getElementById('display-times').addEventListener('click', () => {
             const displayTimesContainer = document.querySelector('.display-times-container');
 

@@ -24,10 +24,16 @@ def shortest_path():
     shortest_path = nx.shortest_path(G, source=node_A, target=node_B, weight="length")
     end_shortest_path = time.time()
 
-    shortest_path_time = end_shortest_path - start_shortest_path
+    start_dijkstra = time.time()
+    dijkstras_path = nx.dijkstra_path(G, source=node_A, target=node_B, weight="length")
+    end_dijkstra = time.time()
 
-    path_coords = [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in shortest_path]
-    return jsonify({"path": path_coords, "time": shortest_path_time})
+    shortest_path_time = end_shortest_path - start_shortest_path
+    dijkstras_time = end_dijkstra - start_dijkstra
+
+    shortest_path_coords = [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in shortest_path]
+    dijkstras_path_coords = [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in dijkstras_path]
+    return jsonify({"path_shortest": shortest_path_coords, "path_dijkstras": dijkstras_path_coords, "time_shortest": shortest_path_time, "time_dijkstras": dijkstras_time})
 
 if __name__ == "__main__":
     app.run(debug=True)
