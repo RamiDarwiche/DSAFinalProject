@@ -4,38 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shortest Path Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <style>
-        #map { height: 100vh; }
-        .clear-button {
-            position: absolute;
-            top: 10px;
-            left: 50px;
-            z-index: 1000;
-            background-color: white;
-            padding: 10px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-    </style>
 </head>
 <body>
     <div id="map"></div>
     <button class="clear-button" id="clear-button">Clear Selections</button>
+    <button class="display-times" id="display-times">Display Algorithm Comparisons</button>
+    <div class="display-times-container">
+        <span id="close">x</span>
+        <h1>Algorithm Comparisons</h1>
+        <section class="algorithm-time" id="shortest-path">
+            <h2>Shortest Path</h2>
+            <p>Time: <span id="shortest-path-time"></span></p>
+        </section>
+        <section class="algorithm-time" id="dijkstras">
+            <h2>Dijkstra's</h2>
+            <p>Time: <span id="dijkstras-time"></span></p>
+        </section>
+        <section class="algorithm-time" id="idk-path">
+            <h2>idk</h2>
+            <p>Time: <span id="idk-path-time"></span></p>
+        </section>
+    </div>
+
 
     <script>
-        const map = L.map('map').setView([29.651634, -82.324826], 13);
+        // figure out what to do with bounding and max zoom
+        const gVilleBottomLeft = L.latLng(29.610916, -82.403343);
+        const gVilleTopRight = L.latLng(29.709964, -82.253311);
+        const mapBounds = L.latLngBounds(gVilleBottomLeft, gVilleTopRight);
+
+        const map = L.map('map', {maxBounds: mapBounds}).setView([29.651634, -82.324826], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19
+            maxZoom: 18,
+            minZoom: 12
         }).addTo(map);
 
         let pointA, pointB;
         const markers = [];
         let pathLine = null;
 
+        // allow for dragging?
         map.on('click', function(e) {
             const { lat, lng } = e.latlng;
             if (!pointA) {
@@ -55,9 +69,15 @@
                 .then(response => response.json())
                 .then(data => {
                     const pathCoords = data.path;
+                    const shortestPathTimer = data.time;
+
+                    if(shortestPathTimer) {
+                        document.getElementById('shortest-path-time').innerHTML = shortestPathTimer;
+                    }
+                    console.log(shortestPathTimer)
 
                     if (pathLine) map.removeLayer(pathLine); // Remove previous path if any
-                    pathLine = L.polyline(pathCoords, { color: 'blue' }).addTo(map);
+                    pathLine = L.polyline(pathCoords, { color: 'blue', weight: 5  }).addTo(map);
                     map.fitBounds(pathLine.getBounds());
                 });
             } else {
@@ -73,6 +93,22 @@
 
             pointA = null;
             pointB = null;
+        });
+
+        // open and close algorithm comparison div
+        document.getElementById('display-times').addEventListener('click', () => {
+            const displayTimesContainer = document.querySelector('.display-times-container');
+
+            if (displayTimesContainer.style.display === 'block') {
+                displayTimesContainer.style.display = 'none';
+            } else {
+                displayTimesContainer.style.display = 'block';
+            }
+        });
+
+        document.getElementById('close').addEventListener('click', () => {
+            const displayTimesContainer = document.querySelector('.display-times-container');
+            displayTimesContainer.style.display = 'none';
         });
     </script>
 </body>

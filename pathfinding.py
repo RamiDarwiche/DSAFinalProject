@@ -42,7 +42,7 @@ point_A = (29.651634, -82.324826)  # Example: Gainesville, Florida
 point_B = (29.648590, -82.343221)  # Another point in Gainesville
 
 # Download the street network for the area around the points
-G = ox.graph_from_point(point_A, dist=2000, network_type='drive')  # Adjust 'dist' for the area size
+G = ox.graph_from_point(point_A, dist=4000, network_type='drive', retain_all=True, truncate_by_edge=True)  # Adjust 'dist' for the area size
 
 # Find the nearest nodes in the graph to the points
 node_A = ox.distance.nearest_nodes(G, point_A[1], point_A[0])  # lon, lat
