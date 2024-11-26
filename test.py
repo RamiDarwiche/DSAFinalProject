@@ -28,12 +28,18 @@ def shortest_path():
     dijkstras_path = nx.dijkstra_path(G, source=node_A, target=node_B, weight="length")
     end_dijkstra = time.time()
 
+    start_bellman_ford = time.time()
+    bellman_ford_path = nx.bellman_ford_path(G, source=node_A, target=node_B, weight="length")
+    end_bellman_ford = time.time()
+
     shortest_path_time = end_shortest_path - start_shortest_path
     dijkstras_time = end_dijkstra - start_dijkstra
+    bellman_ford_time = end_bellman_ford - start_bellman_ford
 
     shortest_path_coords = [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in shortest_path]
     dijkstras_path_coords = [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in dijkstras_path]
-    return jsonify({"path_shortest": shortest_path_coords, "path_dijkstras": dijkstras_path_coords, "time_shortest": shortest_path_time, "time_dijkstras": dijkstras_time})
+    bellman_ford_path_coords = [(G.nodes[node]["y"], G.nodes[node]["x"]) for node in bellman_ford_path]
+    return jsonify({"path_shortest": shortest_path_coords, "path_dijkstras": dijkstras_path_coords, "path_bellman_ford": bellman_ford_path_coords, "time_shortest": shortest_path_time, "time_dijkstras": dijkstras_time, "time_bellman_ford": bellman_ford_time})
 
 if __name__ == "__main__":
     app.run(debug=True)

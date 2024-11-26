@@ -29,9 +29,9 @@
             <h2>Dijkstra's</h2>
             <p>Time: <span id="dijkstras-time"></span></p>
         </section>
-        <section class="algorithm-time" id="idk-path">
-            <h2>idk</h2>
-            <p>Time: <span id="idk-path-time"></span></p>
+        <section class="algorithm-time" id="bellman-ford-path">
+            <h2>Bellman-Ford</h2>
+            <p>Time: <span id="bellman-ford-path-time"></span></p>
         </section>
     </div>
 
@@ -58,6 +58,8 @@
         if(!pointA) {
             document.getElementById('current-instruction').innerHTML = "Click anywhere to select a starting point";
             document.getElementById('shortest-path-time').innerHTML = 'No time found';
+            document.getElementById('dijkstras-time').innerHTML = 'No time found';
+            document.getElementById('bellman-ford-path-time').innerHTML = 'No time found';
         }
 
         // allow for dragging?
@@ -92,12 +94,17 @@
                     const shortestPathTimer = data.time_shortest;
                     const pathCoordsDijkstras = data.path_dijkstras;
                     const dijkstrasTimer = data.time_dijkstras;
+                    const pathCoordsBellmanFord = data.path_bellman_ford;
+                    const bellmanFordTimer = data.time_bellman_ford;
 
                     if(shortestPathTimer) {
                         document.getElementById('shortest-path-time').innerHTML = shortestPathTimer;
                     }
                     if(dijkstrasTimer) {
                         document.getElementById('dijkstras-time').innerHTML = dijkstrasTimer;
+                    }
+                    if(bellmanFordTimer) {
+                        document.getElementById('bellman-ford-path-time').innerHTML = bellmanFordTimer;
                     }
 
                     console.log(shortestPathTimer)
@@ -125,6 +132,8 @@
             document.getElementById('instructions').style.display = 'block';
             document.getElementById('current-instruction').innerHTML = "Click anywhere to select a starting point";
             document.getElementById('shortest-path-time').innerHTML = 'No time found';
+            document.getElementById('dijkstras-time').innerHTML = 'No time found';
+            document.getElementById('bellman-ford-path-time').innerHTML = 'No time found';
         });
 
         // open and close algorithm comparison panel
