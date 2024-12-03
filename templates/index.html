@@ -6,6 +6,7 @@
     <title>Shortest Path Finder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/en/thumb/1/14/Florida_Gators_gator_logo.svg/1200px-Florida_Gators_gator_logo.svg.png">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -16,31 +17,50 @@
     <div class="instructions" id="instructions">
         <h2 id="current-instruction">test</h2>
     </div>
-    <button class="clear-button" id="clear-button">Clear Selections</button>
+
+    <button class="clear-button" id="clear-button">Clear Markers</button>
+    <button class="display-instructions" id="display-instructions">Display Instructions</button>
     <button class="display-times" id="display-times">Display Algorithm Comparisons</button>
-    <div class="display-times-container">
-        <span id="close">x</span>
+
+    <div class="display-instructions-container" id="display-instructions-container">
+        <span class="close" id="close-instructions-container">x</span>
+        <h1>About This Application</h1>
+        <h3>Created by Rami Darwiche, Alexis Simpson, and Sammy Li</h3>
+        <p>This application allows you to select two points on a map and find the shortest path between them. The shortest path is calculated using the A* algorithm, Dijkstra's algorithm, and Bellman-Ford's algorithm. The algorithms' runtime comparisons are displayed in the panel below.</p>
+        <p>The map is restricted to Gainesville, FL. You can click anywhere on the map to select a starting point. After selecting a starting point, click anywhere else on the map to select an ending point. The shortest path between the two points will be displayed on the map. After placing two markers, the application may appear to freeze for a moment as the algorithms are run in the background</p>
+        <p>The blue line represents the path of the A* algorithm, the red line represents the path of the Dijkstra algorithm, and the green line represents the path of the Bellman-Ford algorithm. For all routes, these algorithms take the same route and overlap each other.</p>
+    </div>
+
+    <div class="display-times-container" id="display-times-container">
+        <span class="close" id="close-display-times-container">x</span>
         <h1>Algorithm Comparisons</h1>
-        <section class="algorithm-time" id="shortest-path">
-            <h2>Shortest Path</h2>
-            <p>Time: <span id="shortest-path-time"></span></p>
-        </section>
-        <section class="algorithm-time" id="dijkstras">
-            <h2>Dijkstra's</h2>
-            <p>Time: <span id="dijkstras-time"></span></p>
-        </section>
-        <section class="algorithm-time" id="bellman-ford-path">
-            <h2>Bellman-Ford</h2>
-            <p>Time: <span id="bellman-ford-path-time"></span></p>
+        <section class="wrapper">
+            <section class="algorithm-time" id="a-star-path">
+                <h2>A*</h2>
+                <p>Time: <span id="a-star-path-time"></span></p>
+                <p>Roads checked: <span id="a-star-road-count"></span></p>
+                <p>Intersections checked: <span id="a-star-interesection-count"></span></p>
+            </section>
+            <section class="algorithm-time" id="dijkstras">
+                <h2>Dijkstra's</h2>
+                <p>Time: <span id="dijkstras-time"></span></p>
+                <p>Roads checked: <span id="dijkstras-road-count"></span></p>
+                <p>Intersections checked: <span id="dijkstras-interesection-count"></span></p>
+            </section>
+            <section class="algorithm-time" id="bellman-ford-path">
+                <h2>Bellman-Ford</h2>
+                <p>Time: <span id="bellman-ford-path-time"></span></p>
+                <p>Roads checked: <span id="bellman-ford-road-count"></span></p>
+                <p>Intersections checked: <span id="bellman-ford-interesection-count"></span></p>
+            </section>
         </section>
     </div>
 
 
     <script>
-        // figure out what to do with bounding and max zoom
-        const gVilleBottomLeft = L.latLng(29.590916, -82.403343);
-        const gVilleTopRight = L.latLng(29.709964, -82.253311);
-        //        const gVilleTopRight = L.latLng(29.84868424409252,-82.01843261718751);
+        // restrict map boundaries to Gainesville
+        const gVilleBottomLeft = L.latLng(29.573158476653813,-82.48672485351564);
+        const gVilleTopRight = L.latLng(29.727563954297256,-82.16932296752931);
 
         const mapBounds = L.latLngBounds(gVilleBottomLeft, gVilleTopRight);
 
@@ -51,37 +71,49 @@
         }).addTo(map);
 
         let pointA, pointB;
-        const markers = [];
+        const markers = []; // used to traverse through markers when clearing map
         let pathLine = null;
 
-        // set first instruction
+       // set default map state
         if(!pointA) {
             document.getElementById('current-instruction').innerHTML = "Click anywhere to select a starting point";
-            document.getElementById('shortest-path-time').innerHTML = 'No time found';
+            document.getElementById('a-star-path-time').innerHTML = 'No time found';
             document.getElementById('dijkstras-time').innerHTML = 'No time found';
             document.getElementById('bellman-ford-path-time').innerHTML = 'No time found';
+            document.getElementById('a-star-road-count').innerHTML = 'No roads checked';
+            document.getElementById('dijkstras-road-count').innerHTML = 'No roads checked';
+            document.getElementById('bellman-ford-road-count').innerHTML = 'No roads checked';
+            document.getElementById('a-star-interesection-count').innerHTML = 'No intersections checked';
+            document.getElementById('dijkstras-interesection-count').innerHTML = 'No intersections checked';
+            document.getElementById('bellman-ford-interesection-count').innerHTML = 'No intersections checked';
         }
 
-        // allow for dragging?
-        // clean up code
-        map.on('click', function(e) {
-            const { lat, lng } = e.latlng;
-            if (!pointA) {
-                pointA = [lat, lng];
-                console.log("Point A: " + pointA)
-                // set second instruction after first marker placed
-                document.getElementById('current-instruction').innerHTML = "Click anywhere to select an ending point";
-                let popUpA = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point A</h4>"});
-                const markerA = L.marker(pointA).addTo(map).bindPopup(popUpA).openPopup();
-                markers.push(markerA);
-            } else if (!pointB) {
-                pointB = [lat, lng];
-                console.log("Point B: " + pointB);
-                // TODO: fix const iconB = L.icon({ iconUrl: 'assets/orangeMarker.png', iconSize: [30, 36] });
-                document.getElementById('instructions').style.display = 'none';
-                let popUpB = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point B</h4>"});
-                const markerB = L.marker(pointB).addTo(map).bindPopup(popUpB).openPopup();
-                markers.push(markerB);
+
+       map.on('click', function(e) {
+           const { lat, lng } = e.latlng;
+
+           // on initial click, add the "from" location marker
+           if (!pointA) {
+               pointA = [lat, lng];
+               // set second instruction after first marker placed
+               document.getElementById('current-instruction').innerHTML = "Click anywhere to select an ending point";
+
+               // settings for placing location markers on map
+               const iconA = L.icon({iconUrl: "../static/blue-marker.png", iconSize: [32, 36] });
+               let popUpA = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point A</h4>", offset: L.point(0,-12)});
+               const markerA = L.marker(pointA, {icon: iconA}).addTo(map).bindPopup(popUpA).openPopup();
+               markers.push(markerA); // add marker to marker array
+
+           // on second click, add the "to" location marker
+           } else if (!pointB) {
+               pointB = [lat, lng];
+
+               // settings for placing location markers on map
+               const iconB = L.icon({iconUrl: "../static/orange-marker.png", iconSize: [32, 36] });
+               document.getElementById('instructions').style.display = 'none'; // hide instructions after placing last marker
+               let popUpB = L.popup({autoClose: false, closeOnClick: false, closeButton: false, content: "<h4>Point B</h4>", offset: L.point(0,-12)});
+               const markerB = L.marker(pointB, {icon: iconB}).addTo(map).bindPopup(popUpB).openPopup();
+               markers.push(markerB); // add marker to marker array
 
                 fetch('/shortest_path', {
                     method: 'POST',
@@ -89,28 +121,47 @@
                     body: JSON.stringify({ pointA, pointB })
                 })
                 .then(response => response.json())
-                .then(data => {
-                    const pathCoordsShortest = data.path_shortest;
-                    const shortestPathTimer = data.time_shortest;
+                .then(data => { // parse through returned shortest path data
+                    const pathCoordsAStar = data.path_a_star;
+                    const aStarPathTimer = data.time_a_star;
+                    const aStarEdgeCount = data.edge_count_a_star;
+                    const aStarNodeCount = data.node_count_a_star;
+
+
                     const pathCoordsDijkstras = data.path_dijkstras;
                     const dijkstrasTimer = data.time_dijkstras;
+                    const dijkstraEdgeCount = data.edge_count_dijkstras;
+                    const dijkstraNodeCount = data.node_count_dijkstras;
+
                     const pathCoordsBellmanFord = data.path_bellman_ford;
                     const bellmanFordTimer = data.time_bellman_ford;
+                    const bellmanFordEdgeCount = data.edge_count_bellman_ford;
+                    const bellmanFordNodeCount = data.node_count_bellman_ford;
 
-                    if(shortestPathTimer) {
-                        document.getElementById('shortest-path-time').innerHTML = shortestPathTimer;
+                    // display received data
+                    if(aStarPathTimer && aStarEdgeCount && aStarNodeCount) {
+                        document.getElementById('a-star-path-time').innerHTML = aStarPathTimer;
+                        document.getElementById('a-star-road-count').innerHTML = aStarEdgeCount;
+                        document.getElementById('a-star-interesection-count').innerHTML = aStarNodeCount;
                     }
-                    if(dijkstrasTimer) {
+                    if(dijkstrasTimer && dijkstraEdgeCount && dijkstraNodeCount) {
                         document.getElementById('dijkstras-time').innerHTML = dijkstrasTimer;
+                        document.getElementById('dijkstras-road-count').innerHTML = dijkstraEdgeCount;
+                        document.getElementById('dijkstras-interesection-count').innerHTML = dijkstraNodeCount;
                     }
-                    if(bellmanFordTimer) {
+                    if(bellmanFordTimer && bellmanFordEdgeCount && bellmanFordNodeCount) {
                         document.getElementById('bellman-ford-path-time').innerHTML = bellmanFordTimer;
+                        document.getElementById('bellman-ford-road-count').innerHTML = bellmanFordEdgeCount;
+                        document.getElementById('bellman-ford-interesection-count').innerHTML = bellmanFordNodeCount;
                     }
+                    document.getElementById('display-times-container').style.display = 'flex';
 
-                    console.log(shortestPathTimer)
+                    if (pathLine) map.removeLayer(pathLine); // remove previous path if any
 
-                    if (pathLine) map.removeLayer(pathLine); // Remove previous path if any
-                    pathLine = L.polyline(pathCoordsShortest, { color: 'blue', weight: 5  }).addTo(map);
+                    // draw the shortest paths on map, zoom to fit path, and display the algorithm comparison container
+                    pathLine = L.polyline(pathCoordsAStar, { color: 'blue', weight: 10  }).addTo(map);
+                    pathLine2 = L.polyline(pathCoordsDijkstras, { color: 'red', weight: 5, dashArray: "12"}).addTo(map);
+                    pathLine3 = L.polyline(pathCoordsBellmanFord, { color: 'green', weight: 5, dashArray: "24"}).addTo(map);
 
                     const padding = L.point(300, 300);
                     map.fitBounds(pathLine.getBounds(), {padding});
@@ -125,20 +176,40 @@
             markers.forEach(marker => map.removeLayer(marker));
             markers.length = 0;
 
-            if (pathLine) map.removeLayer(pathLine);
+            if (pathLine) {
+                map.removeLayer(pathLine);
+                map.removeLayer(pathLine2);
+                map.removeLayer(pathLine3);
+            }
 
             pointA = null;
             pointB = null;
             document.getElementById('instructions').style.display = 'block';
             document.getElementById('current-instruction').innerHTML = "Click anywhere to select a starting point";
-            document.getElementById('shortest-path-time').innerHTML = 'No time found';
+            document.getElementById('a-star-path-time').innerHTML = 'No time found';
             document.getElementById('dijkstras-time').innerHTML = 'No time found';
             document.getElementById('bellman-ford-path-time').innerHTML = 'No time found';
+            document.getElementById('a-star-road-count').innerHTML = 'No roads checked';
+            document.getElementById('dijkstras-road-count').innerHTML = 'No roads checked';
+            document.getElementById('bellman-ford-road-count').innerHTML = 'No roads checked';
+            document.getElementById('a-star-interesection-count').innerHTML = 'No intersections checked';
+            document.getElementById('dijkstras-interesection-count').innerHTML = 'No intersections checked';
+            document.getElementById('bellman-ford-interesection-count').innerHTML = 'No intersections checked';
         });
 
         // open and close algorithm comparison panel
         document.getElementById('display-times').addEventListener('click', () => {
             const displayTimesContainer = document.querySelector('.display-times-container');
+
+            if (displayTimesContainer.style.display === 'flex') {
+                displayTimesContainer.style.display = 'none';
+            } else {
+                displayTimesContainer.style.display = 'flex';
+            }
+        });
+
+        document.getElementById('display-instructions').addEventListener('click', () => {
+            const displayTimesContainer = document.querySelector('.display-instructions-container');
 
             if (displayTimesContainer.style.display === 'block') {
                 displayTimesContainer.style.display = 'none';
@@ -147,8 +218,14 @@
             }
         });
 
-        document.getElementById('close').addEventListener('click', () => {
+        // close algorithm comparison panel after clicking 'x'
+        document.getElementById('close-display-times-container').addEventListener('click', () => {
             const displayTimesContainer = document.querySelector('.display-times-container');
+            displayTimesContainer.style.display = 'none';
+        });
+
+        document.getElementById('close-instructions-container').addEventListener('click', () => {
+            const displayTimesContainer = document.querySelector('.display-instructions-container');
             displayTimesContainer.style.display = 'none';
         });
     </script>

@@ -12,11 +12,12 @@ body {
 
 h1 {
     margin: 0 5px;
+    padding: 0px;
 }
 
-.clear-button, .display-times {
+.clear-button, .display-times, .display-instructions {
     position: absolute;
-    bottom: 80px;
+    bottom: 150px;
     left: 20px;
     z-index: 1000;
     background-color: white;
@@ -35,7 +36,7 @@ h1 {
     background-color: white;
     top: 10px;
     right: 20px;
-    width: fit-content;
+    width: 500px;
     height: fit-content;
     padding: 0px 20px;
     border: 2px solid blue;
@@ -47,6 +48,10 @@ h1 {
     color: #333333;
 }
 
+.display-instructions {
+    bottom: 80px;
+}
+
 .display-times {
     bottom: 10px;
 }
@@ -55,8 +60,42 @@ h1 {
     display: none;
     position: absolute;
     height: fit-content;
+    flex-direction: column;
     width: 300px;
     bottom: 10px;
+    right: 20px;
+    z-index: 1000;
+    background-color: white;
+    opacity: 0.8;
+    padding: 20px;
+    border: 2px solid blue;
+    border-radius: 5px;
+}
+
+@media only screen and (max-height: 1256px) {
+    .display-times-container {
+        width: fit-content;
+        height: fit-content;
+    }
+
+    .wrapper {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .algorithm-time {
+        padding-right: 20px;
+        width: 250px;
+    }
+}
+
+
+.display-instructions-container {
+    display: none;
+    position: absolute;
+    height: fit-content;
+    width: 650px;
+    top: 100px;
     right: 20px;
     z-index: 1000;
     background-color: white;
@@ -77,7 +116,7 @@ h4 {
     font-size: 13px;
 }
 
-#close {
+.close {
     font-size: 25px;
     font-weight: bold;
     position: absolute;
