@@ -15,8 +15,10 @@ transportation efficiency (travel time and costs), and improving user experience
 - Also provides us with practical experience for getting familiar with path finding
 algorithms.
 
-Features: The problem will be solved when we have determined which path-finding
-algorithm will produce the shortest time
+Features and How To Use:
+Our program displays a map of Gainesville, FL. Users can click anywhere on the map as their starting point and then click anywhere a second time to indicate their ending point. The map will then display the shortest path from the starting point to the ending point along the road network. A box on the side of the map will display details on the three shortest path algorithms we implemented. For each one, it will show the time in seconds that it took the algorithm to find the shortest path, the number of roads that the algorithm analyzed, and the number of intersections it analyzed. All of the shortest path algorithms will generate the same shortest path, just with different completion times and analysis methods.
+
+Users can click the boxes on the bottom right of the screen to decide what information is viewable to them on the map. This includes removable route markers, algorithm comparison information, and general instructions for working the application.
 
 Data: https://www.openstreetmap.org/#map=5/39.96/-97.82,
 https://developers.google.com/maps
