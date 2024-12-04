@@ -40,7 +40,7 @@ After our individual implementations, we will rejoin to build the backend for a 
 Python using the Flask framework (Mostly Alexis and Sammy). The front end will be built
 last using React and Typescript (Mostly Rami).
 
-How to run: Ensure that you have some type of compiler for Python and download all the files from this repository. Check the first link in the references for the Osmnx installation. After finishing the installation of Osmnx, you need to make sure the setting program is running through miniConda, Anaconda, or miniForge (these three are provided in the installation guide). Afterward, you should be able to run the app.py file by clicking run on whatever program you are using. This will generate a link in the console that you can click on and take you to the website where you can use the program.
+How to Run: Ensure that you have some type of compiler for Python and download all the files from this repository. Check the first link in the references for the Osmnx installation. After finishing the installation of Osmnx, you need to make sure the setting program is running through miniConda, Anaconda, or miniForge (these three are provided in the installation guide). Afterward, you should be able to run the app.py file by clicking run on whatever program you are using. This will generate a link in the console that you can click on and take you to the website where you can use the program.
 
 References
 - https://osmnx.readthedocs.io/en/stable/installation.html
