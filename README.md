@@ -17,13 +17,13 @@ algorithms.
 
 Features and How To Use:
 Our program displays a map of Gainesville, FL. Users can click anywhere on the map as their starting point and then click anywhere a second time to indicate their ending point. The map will then display the shortest path from the starting point to the ending point along the road network. A box on the side of the map will display details on the three shortest path algorithms we implemented. For each one, it will show the time in seconds that it took the algorithm to find the shortest path, the number of roads that the algorithm analyzed, and the number of intersections it analyzed. All of the shortest path algorithms will generate the same shortest path, just with different completion times and analysis methods.
-
+JS 
 Users can click the boxes on the bottom right of the screen to decide what information is viewable to them on the map. This includes removable route markers, algorithm comparison information, and general instructions for working the application.
 
 Data: https://www.openstreetmap.org/#map=5/39.96/-97.82,
 https://developers.google.com/maps
 
-Tools: Python, Flask for backend implementation, React for building map frontend
+Tools: Python, Flask for backend implementation, Javascript, CSS, and HTML for building map frontend. Map provided by Leaflet JS API. OSMnx Python library used work with data obtained from OpenStreetMap.
 
 Visuals:
 
@@ -42,6 +42,9 @@ last using React and Typescript (Mostly Rami).
 
 References
 - Shortest Path Algorithm Tutorial with Problems - GeeksforGeeks
-- https://iaeme.com/MasterAdmin/Journal_uploads/IJMET/VOLUME_9_ISSUE_2/IJMET_
-09_02_078.pdf
+- https://iaeme.com/MasterAdmin/Journal_uploads/IJMET/VOLUME_9_ISSUE_2/IJMET_09_02_078.pdf
 - https://springerplus.springeropen.com/articles/10.1186/2193-1801-2-291
+- https://osmnx.readthedocs.io/en/stable/user-reference.html
+- https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
+- https://networkx.org/documentation/stable/reference/classes/generated/networkx.MultiDiGraph.nodes.html#networkx.MultiDiGraph.nodes
+- https://networkx.org/documentation/stable/reference/classes/generated/networkx.MultiDiGraph.nodes.html#networkx.MultiDiGraph.nodes
