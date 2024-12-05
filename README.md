@@ -10,18 +10,20 @@ Project Title: Comparison of GPS Path-finding Algorithms
 Problem: What path-finding algorithms are most efficient for finding the shortest path
 between two points on a real-world map?
 
-Motivation: Figuring out the fastest path finding algorithm can help with improving
+Motivation: Figuring out the fastest path-finding algorithm can help with improving
 transportation efficiency (travel time and costs), and improving user experience.
-- Also provides us with practical experience for getting familiar with path finding
+- Also provides us with practical experience for getting familiar with path-finding
 algorithms.
 
-Features: The problem will be solved when we have determined which path-finding
-algorithm will produce the shortest time
+Features and How To Use:
+Our program displays a map of Gainesville, FL. Users can click anywhere on the map as their starting point and then click anywhere a second time to indicate their ending point. The map will then display the shortest path from the starting point to the ending point along the road network. A box on the side of the map will display details on the three shortest path algorithms we implemented. For each one, it will show the time in seconds that it took the algorithm to find the shortest path, the number of roads that the algorithm analyzed, and the number of intersections it analyzed. All of the shortest path algorithms will generate the same shortest path, just with different completion times and analysis methods.
+JS 
+Users can click the boxes on the bottom right of the screen to decide what information is viewable to them on the map. This includes removable route markers, algorithm comparison information, and general instructions for working the application.
 
 Data: https://www.openstreetmap.org/#map=5/39.96/-97.82,
 https://developers.google.com/maps
 
-Tools: Python, Flask for backend implementation, React for building map frontend
+Tools: Python, Flask for backend implementation, Javascript, CSS, and HTML for building map frontend. Map provided by Leaflet JS API. OSMnx Python library used to work with data obtained from OpenStreetMap.
 
 Visuals:
 
@@ -35,11 +37,16 @@ in this tree
 Distribution of Responsibility and roles: Together we will build a tree to house the data.
 Individually, we will each research and implement a different shortest-path algorithm.
 After our individual implementations, we will rejoin to build the backend for a website in
-Python using the Flask framework (Mostly Alexis and Sammy). The frontend will be built
+Python using the Flask framework (Mostly Alexis and Sammy). The front end will be built
 last using React and Typescript (Mostly Rami).
 
+How to Run: Ensure that you have some type of compiler for Python and download all the files from this repository. Check the first link in the references for the Osmnx installation. After finishing the installation of Osmnx, you need to make sure the setting program is running through miniConda, Anaconda, or miniForge (these three are provided in the installation guide). Afterward, you should be able to run the app.py file by clicking run on whatever program you are using. This will generate a link in the console that you can click on and take you to the website where you can use the program.
+
 References
+- https://osmnx.readthedocs.io/en/stable/installation.html
 - Shortest Path Algorithm Tutorial with Problems - GeeksforGeeks
-- https://iaeme.com/MasterAdmin/Journal_uploads/IJMET/VOLUME_9_ISSUE_2/IJMET_
-09_02_078.pdf
+- https://iaeme.com/MasterAdmin/Journal_uploads/IJMET/VOLUME_9_ISSUE_2/IJMET_09_02_078.pdf
 - https://springerplus.springeropen.com/articles/10.1186/2193-1801-2-291
+- https://osmnx.readthedocs.io/en/stable/user-reference.html
+- https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
+- https://networkx.org/documentation/stable/reference/classes/generated/networkx.MultiDiGraph.nodes.html#networkx.MultiDiGraph.nodes
