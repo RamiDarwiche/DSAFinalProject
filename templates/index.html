@@ -158,8 +158,6 @@
 
                     // remove previous path if any
                     if (pathLine) map.removeLayer(pathLine);
-                    if (pathLine2) map.removeLayer(pathLine2);
-                    if (pathLine3) map.removeLayer(pathLine3);
 
                     // draw the shortest paths on map, zoom to fit path, and display the algorithm comparison container
                     pathLine = L.polyline(pathCoordsAStar, { color: 'blue', weight: 10  }).addTo(map);
